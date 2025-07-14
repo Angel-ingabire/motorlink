@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MotorLink</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="assets/logo.svg" alt="MotorLink" class="h-8 w-auto">
+                    <span class="ml-2 text-xl font-bold text-blue-600">MotorLink</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="dashboard.html" class="text-blue-600 font-medium">Dashboard</a>
+                    <a href="tracking.html" class="text-gray-700 hover:text-blue-600 transition-colors">Track Ride</a>
+                    <a href="review.html" class="text-gray-700 hover:text-blue-600 transition-colors">Reviews</a>
+                    <a href="blog.html" class="text-gray-700 hover:text-blue-600 transition-colors">Blog</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                    </button>
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900" id="profile-menu">
+                            <img src="https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=U" alt="Profile" class="h-8 w-8 rounded-full">
+                            <span class="hidden md:block">Angel</span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                        <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <a href="index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <button class="md:hidden p-2" id="mobile-menu-toggle">
+                    <i class="fas fa-bars text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome back, Angel!</h1>
+            <p class="text-gray-600">Where would you like to go today?</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-route text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Total Trips</p>
+                        <p class="text-2xl font-bold text-gray-900">47</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-star text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Rating</p>
+                        <p class="text-2xl font-bold text-gray-900">4.8</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <div class="flex items-center">
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-wallet text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Total Spent</p>
+                        <p class="text-2xl font-bold text-gray-900">RWF 45,200</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ride Booking Form -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Book a Ride</h2>
+            <form id="rideBookingForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="pickup" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                            Pickup Location
+                        </label>
+                        <input type="text" id="pickup" name="pickup" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter pickup location">
+                    </div>
+                    <div>
+                        <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt text-red-600 mr-2"></i>
+                            Destination
+                        </label>
+                        <input type="text" id="destination" name="destination" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Enter destination">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="rideType" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-car text-blue-600 mr-2"></i>
+                            Ride Type
+                        </label>
+                        <select id="rideType" name="rideType" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select ride type</option>
+                            <option value="motorbike">Motorbike</option>
+                            <option value="car">Car</option>
+                            <option value="shared">Shared Ride</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="passengers" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-users text-blue-600 mr-2"></i>
+                            Passengers
+                        </label>
+                        <select id="passengers" name="passengers"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="1">1 Passenger</option>
+                            <option value="2">2 Passengers</option>
+                            <option value="3">3 Passengers</option>
+                            <option value="4">4 Passengers</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="rideTime" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-clock text-blue-600 mr-2"></i>
+                            Ride Time
+                        </label>
+                        <select id="rideTime" name="rideTime"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="now">Now</option>
+                            <option value="scheduled">Schedule for later</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Find Rides
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Rides -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Recent Rides</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-blue-100 p-2 rounded-full">
+                            <i class="fas fa-motorcycle text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Kimisagara → Kigali City</p>
+                            <p class="text-sm text-gray-500">Jan 10, 2025 • 2:30 PM</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-gray-900">RWF 2,500</p>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="ml-1 text-sm text-gray-500">5.0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-green-100 p-2 rounded-full">
+                            <i class="fas fa-car text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Kacyiru → Remera</p>
+                            <p class="text-sm text-gray-500">Jan 8, 2025 • 9:15 AM</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-gray-900">RWF 3,200</p>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="ml-1 text-sm text-gray-500">4.0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-purple-100 p-2 rounded-full">
+                            <i class="fas fa-users text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">Nyamirambo → Airport</p>
+                            <p class="text-sm text-gray-500">Jan 5, 2025 • 6:00 AM</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-gray-900">RWF 4,800</p>
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="ml-1 text-sm text-gray-500">5.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

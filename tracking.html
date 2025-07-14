@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Ride - MotorLink</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="assets/logo.svg" alt="MotorLink" class="h-8 w-auto">
+                    <span class="ml-2 text-xl font-bold text-blue-600">MotorLink</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-colors">Dashboard</a>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors" id="cancelRide">
+                        Cancel Ride
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Ride Status -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-2xl font-bold text-gray-900">Track Your Ride</h1>
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-medium text-green-600" id="rideStatus">Driver En Route</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-motorcycle text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Ride Type</p>
+                        <p class="font-semibold text-gray-900">Motorbike</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-clock text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Estimated Arrival</p>
+                        <p class="font-semibold text-gray-900" id="eta">3 minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map and Tracking -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Map Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Location</h2>
+                    <!-- Map Placeholder -->
+                    <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center relative" id="mapContainer">
+                        <div class="text-center">
+                            <i class="fas fa-map-marked-alt text-gray-400 text-4xl mb-4"></i>
+                            <p class="text-gray-600">Interactive map will be integrated here</p>
+                            <p class="text-sm text-gray-500 mt-2">Showing real-time location of driver and route</p>
+                        </div>
+                        
+                        <!-- Simulated route elements -->
+                        <div class="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            Pickup: Kimisagara
+                        </div>
+                        <div class="absolute bottom-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            Destination: Kigali City
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm animate-pulse">
+                            <i class="fas fa-motorcycle mr-1"></i>
+                            Driver Location
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ride Details -->
+            <div class="space-y-6">
+                <!-- Driver Information -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Driver Information</h2>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <img src="https://via.placeholder.com/60x60/3B82F6/FFFFFF?text=JD" alt="Driver" class="w-15 h-15 rounded-full">
+                        <div>
+                            <p class="font-semibold text-gray-900">Jean-Claude Uwimana</p>
+                            <div class="flex items-center mt-1">
+                                <div class="flex text-yellow-400 mr-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="text-sm text-gray-600">4.8 (127 reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Vehicle</span>
+                            <span class="text-sm font-medium text-gray-900">Honda CB125</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">License Plate</span>
+                            <span class="text-sm font-medium text-gray-900">RAD 123A</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Color</span>
+                            <span class="text-sm font-medium text-gray-900">Blue</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-4">
+                        <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-phone mr-2"></i>
+                            Call
+                        </button>
+                        <button class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fas fa-sms mr-2"></i>
+                            Message
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trip Details -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Trip Details</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="fas fa-map-marker-alt text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Pickup Location</p>
+                                <p class="font-medium text-gray-900">Kimisagara Market</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-red-100 p-2 rounded-full">
+                                <i class="fas fa-map-marker-alt text-red-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Destination</p>
+                                <p class="font-medium text-gray-900">Kigali City Center</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-blue-100 p-2 rounded-full">
+                                <i class="fas fa-money-bill-wave text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Fare</p>
+                                <p class="font-medium text-gray-900">RWF 2,500</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-purple-100 p-2 rounded-full">
+                                <i class="fas fa-route text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Distance</p>
+                                <p class="font-medium text-gray-900">2.3 km</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Updates -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Updates</h2>
+                    <div class="space-y-4" id="liveUpdates">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-blue-100 p-2 rounded-full">
+                                <i class="fas fa-clock text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">2:45 PM</p>
+                                <p class="font-medium text-gray-900">Driver is on the way</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">2:42 PM</p>
+                                <p class="font-medium text-gray-900">Ride confirmed</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-yellow-100 p-2 rounded-full">
+                                <i class="fas fa-search text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">2:40 PM</p>
+                                <p class="font-medium text-gray-900">Finding driver...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cancel Ride Modal -->
+    <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="bg-red-100 p-3 rounded-full w-16 h-16 mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Cancel Ride?</h3>
+                <p class="text-gray-600 mb-6">Are you sure you want to cancel this ride? A cancellation fee may apply.</p>
+                <div class="flex space-x-4">
+                    <button onclick="closeCancelModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                        Keep Ride
+                    </button>
+                    <button onclick="confirmCancel()" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                        Cancel Ride
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/tracking.js"></script>
+</body>
+</html>

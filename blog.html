@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - MotorLink</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <img src="assets/logo.svg" alt="MotorLink" class="h-8 w-auto">
+                    <span class="ml-2 text-xl font-bold text-blue-600">MotorLink</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 transition-colors">Dashboard</a>
+                    <a href="tracking.html" class="text-gray-700 hover:text-blue-600 transition-colors">Track Ride</a>
+                    <a href="review.html" class="text-gray-700 hover:text-blue-600 transition-colors">Reviews</a>
+                    <a href="blog.html" class="text-blue-600 font-medium">Blog</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="profile.html" class="text-gray-700 hover:text-blue-600 transition-colors">Profile</a>
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 transition-colors">Logout</a>
+                </div>
+                <button class="md:hidden p-2" id="mobile-menu-toggle">
+                    <i class="fas fa-bars text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">MotorLink Blog</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Stay updated with the latest news, tips, and stories from the MotorLink community</p>
+        </div>
+
+        <!-- Featured Article -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-12">
+            <div class="md:flex">
+                <div class="md:w-1/2">
+                    <img src="https://via.placeholder.com/600x400/3B82F6/FFFFFF?text=Featured+Article" alt="Featured Article" class="w-full h-64 md:h-full object-cover">
+                </div>
+                <div class="md:w-1/2 p-8">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Featured</span>
+                        <span class="text-sm text-gray-500 ml-4">January 15, 2025</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">How MotorLink is Revolutionizing Transportation in Kigali</h2>
+                    <p class="text-gray-600 mb-4">Discover how our innovative ride-booking platform is making transportation more accessible, affordable, and efficient for everyone in Rwanda's capital city.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Blog Post 1 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/10B981/FFFFFF?text=Safety+Tips" alt="Safety Tips" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Safety</span>
+                        <span class="text-sm text-gray-500 ml-4">January 12, 2025</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Essential Safety Tips for Motorbike Rides</h3>
+                    <p class="text-gray-600 mb-4">Learn the important safety measures to ensure a secure and comfortable ride every time you book with MotorLink.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+
+            <!-- Blog Post 2 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/8B5CF6/FFFFFF?text=Driver+Story" alt="Driver Story" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">Stories</span>
+                        <span class="text-sm text-gray-500 ml-4">January 10, 2025</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Meet Jean-Claude: A Day in the Life of a MotorLink Driver</h3>
+                    <p class="text-gray-600 mb-4">Follow Jean-Claude Uwimana as he shares his experience working as a professional driver with MotorLink.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+
+            <!-- Blog Post 3 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/F59E0B/FFFFFF?text=App+Features" alt="App Features" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Features</span>
+                        <span class="text-sm text-gray-500 ml-4">January 8, 2025</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">New Features: Real-Time Tracking and Improved ETA</h3>
+                    <p class="text-gray-600 mb-4">Explore the latest updates to our app that make booking and tracking rides even more convenient and reliable.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+
+            <!-- Blog Post 4 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/EF4444/FFFFFF?text=City+Guide" alt="City Guide" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Guide</span>
+                        <span class="text-sm text-gray-500 ml-4">January 5, 2025</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Ultimate Guide to Getting Around Kigali</h3>
+                    <p class="text-gray-600 mb-4">Navigate Kigali like a pro with our comprehensive guide to the city's neighborhoods, attractions, and transport hubs.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+
+            <!-- Blog Post 5 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/06B6D4/FFFFFF?text=Sustainability" alt="Sustainability" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-0.5 rounded">Environment</span>
+                        <span class="text-sm text-gray-500 ml-4">January 3, 2025</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">MotorLink's Commitment to Sustainable Transportation</h3>
+                    <p class="text-gray-600 mb-4">Learn about our initiatives to reduce carbon emissions and promote eco-friendly transportation options in Kigali.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+
+            <!-- Blog Post 6 -->
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <img src="https://via.placeholder.com/400x250/84CC16/FFFFFF?text=Tips+Tricks" alt="Tips and Tricks" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-lime-100 text-lime-800 text-xs font-medium px-2.5 py-0.5 rounded">Tips</span>
+                        <span class="text-sm text-gray-500 ml-4">December 30, 2024</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">10 Tips to Save Money on Your Daily Commute</h3>
+                    <p class="text-gray-600 mb-4">Discover practical ways to reduce your transportation costs while still enjoying reliable and comfortable rides.</p>
+                    <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Read More <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </article>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Frequently Asked Questions</h2>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">How do I book a ride on MotorLink?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Booking a ride is simple! Just enter your pickup location and destination in our app, select your preferred vehicle type, and choose from available drivers. You can track your ride in real-time and pay securely through the app.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">What payment methods are accepted?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>We accept various payment methods including mobile money (MTN Mobile Money, Airtel Money), credit/debit cards, and cash payments. All transactions are secure and encrypted.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">How are ride fares calculated?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Our fare calculation is based on distance, time, and ride type. We provide transparent pricing with no hidden fees. You'll see the estimated fare before booking, and the final amount is calculated at the end of your trip.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">What safety measures are in place?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Safety is our top priority. All drivers are verified and undergo background checks. We provide real-time tracking, emergency contacts, and 24/7 customer support. All vehicles are regularly inspected and insured.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">Can I cancel or modify my ride?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Yes, you can cancel your ride through the app. Free cancellation is available within 2 minutes of booking. After that, a small cancellation fee may apply depending on the timing and circumstances.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <button class="w-full text-left flex items-center justify-between faq-question">
+                        <h3 class="text-lg font-semibold text-gray-900">How can I become a MotorLink driver?</h3>
+                        <i class="fas fa-chevron-down text-gray-500"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>To become a driver, you need a valid driver's license, vehicle registration, insurance, and must pass our verification process. Sign up through our driver portal and complete the onboarding process to start earning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Signup -->
+        <div class="bg-blue-600 rounded-lg p-8 mt-16 text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">Stay Updated</h2>
+            <p class="text-blue-100 mb-6">Subscribe to our newsletter for the latest updates, tips, and exclusive offers</p>
+            <form class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <button type="submit" class="bg-blue-800 text-white px-6 py-2 rounded-r-lg hover:bg-blue-900 transition-colors">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        // FAQ functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (answer.classList.contains('hidden')) {
+                    answer.classList.remove('hidden');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    answer.classList.add('hidden');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
