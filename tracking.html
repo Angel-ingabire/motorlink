@@ -8,6 +8,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- Mapbox GL JS CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border-radius: 0.5rem;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -67,27 +78,9 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Location</h2>
-                    <!-- Map Placeholder -->
+                    <!-- Map Integration -->
                     <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center relative" id="mapContainer">
-                        <div class="text-center">
-                            <i class="fas fa-map-marked-alt text-gray-400 text-4xl mb-4"></i>
-                            <p class="text-gray-600">Interactive map will be integrated here</p>
-                            <p class="text-sm text-gray-500 mt-2">Showing real-time location of driver and route</p>
-                        </div>
-                        
-                        <!-- Simulated route elements -->
-                        <div class="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm">
-                            <i class="fas fa-map-marker-alt mr-1"></i>
-                            Pickup: Kimisagara
-                        </div>
-                        <div class="absolute bottom-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-                            <i class="fas fa-map-marker-alt mr-1"></i>
-                            Destination: Kigali City
-                        </div>
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-sm animate-pulse">
-                            <i class="fas fa-motorcycle mr-1"></i>
-                            Driver Location
-                        </div>
+                        <div id="map"></div>
                     </div>
                 </div>
             </div>
@@ -242,5 +235,6 @@
 
     <script src="js/script.js"></script>
     <script src="js/tracking.js"></script>
+    <script src="js/map.js"></script>
 </body>
 </html>
