@@ -47,7 +47,7 @@
                 <h1 class="text-2xl font-bold text-gray-900">Track Your Ride</h1>
                 <div class="flex items-center space-x-2">
                     <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-sm font-medium text-green-600" id="rideStatus">Driver En Route</span>
+                    <span class="text-sm font-medium text-green-600" id="rideStatus">En Route</span>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,7 +57,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Ride Type</p>
-                        <p class="font-semibold text-gray-900">Motorbike</p>
+                        <p class="font-semibold text-gray-900" id="rideTypeDisplay">Motorbike</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -66,7 +66,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Estimated Arrival</p>
-                        <p class="font-semibold text-gray-900" id="eta">3 minutes</p>
+                        <p class="font-semibold text-gray-900" id="eta">Calculating...</p>
                     </div>
                 </div>
             </div>
@@ -87,51 +87,6 @@
 
             <!-- Ride Details -->
             <div class="space-y-6">
-                <!-- Driver Information -->
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Driver Information</h2>
-                    <div class="flex items-center space-x-4 mb-4">
-                        <img src="https://via.placeholder.com/60x60/3B82F6/FFFFFF?text=JD" alt="Driver" class="w-15 h-15 rounded-full">
-                        <div>
-                            <p class="font-semibold text-gray-900">Jean-Claude Uwimana</p>
-                            <div class="flex items-center mt-1">
-                                <div class="flex text-yellow-400 mr-2">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <span class="text-sm text-gray-600">4.8 (127 reviews)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Vehicle</span>
-                            <span class="text-sm font-medium text-gray-900">Honda CB125</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">License Plate</span>
-                            <span class="text-sm font-medium text-gray-900">RAD 123A</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">Color</span>
-                            <span class="text-sm font-medium text-gray-900">Blue</span>
-                        </div>
-                    </div>
-                    <div class="flex space-x-3 mt-4">
-                        <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-phone mr-2"></i>
-                            Call
-                        </button>
-                        <button class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                            <i class="fas fa-sms mr-2"></i>
-                            Message
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Trip Details -->
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">Trip Details</h2>
@@ -142,7 +97,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Pickup Location</p>
-                                <p class="font-medium text-gray-900">Kimisagara Market</p>
+                                <p class="font-medium text-gray-900" id="pickupLocation">Loading...</p>
                             </div>
                         </div>
                         <div class="flex items-start space-x-3">
@@ -151,7 +106,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Destination</p>
-                                <p class="font-medium text-gray-900">Kigali City Center</p>
+                                <p class="font-medium text-gray-900" id="destinationLocation">Loading...</p>
                             </div>
                         </div>
                         <div class="flex items-start space-x-3">
@@ -160,7 +115,7 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Fare</p>
-                                <p class="font-medium text-gray-900">RWF 2,500</p>
+                                <p class="font-medium text-gray-900" id="fareAmount">Calculating...</p>
                             </div>
                         </div>
                         <div class="flex items-start space-x-3">
@@ -169,12 +124,11 @@
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600">Distance</p>
-                                <p class="font-medium text-gray-900">2.3 km</p>
+                                <p class="font-medium text-gray-900" id="tripDistance">Calculating...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <!-- Live Updates -->
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">Live Updates</h2>
@@ -184,26 +138,8 @@
                                 <i class="fas fa-clock text-blue-600"></i>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600">2:45 PM</p>
-                                <p class="font-medium text-gray-900">Driver is on the way</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-green-100 p-2 rounded-full">
-                                <i class="fas fa-check text-green-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">2:42 PM</p>
-                                <p class="font-medium text-gray-900">Ride confirmed</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-yellow-100 p-2 rounded-full">
-                                <i class="fas fa-search text-yellow-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">2:40 PM</p>
-                                <p class="font-medium text-gray-900">Finding driver...</p>
+                                <p class="text-sm text-gray-600" id="currentTime">Loading...</p>
+                                <p class="font-medium text-gray-900">Tracking started</p>
                             </div>
                         </div>
                     </div>
@@ -234,7 +170,6 @@
     </div>
 
     <script src="js/script.js"></script>
-    <script src="js/tracking.js"></script>
     <script src="js/map.js"></script>
 </body>
 </html>
