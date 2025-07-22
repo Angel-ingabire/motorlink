@@ -4,10 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from . import models
 from . import schemas
-<<<<<<< HEAD
 from .auth import get_password_hash
-=======
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
 
 async def get_user(db: AsyncSession, user_id: uuid.UUID):
     result = await db.execute(select(models.User).filter(models.User.id == user_id))
@@ -20,7 +17,6 @@ async def get_user(db: AsyncSession, user_id: uuid.UUID):
     return user
 
 async def create_user(db: AsyncSession, user: schemas.UserCreate):
-<<<<<<< HEAD
     # Create user data dict without password
     user_data = user.dict(exclude={'password'})
     
@@ -31,10 +27,6 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     db_user = models.User(**user_data)
     db.add(db_user)
     
-=======
-    db_user = models.User(**user.dict())
-    db.add(db_user)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
     try:
         await db.commit()
         await db.refresh(db_user)
@@ -42,7 +34,6 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
     except Exception as e:
         await db.rollback()
         if "duplicate key" in str(e).lower():
-<<<<<<< HEAD
             if "email" in str(e).lower():
                 detail = "Email already exists"
             elif "phone_number" in str(e).lower():
@@ -56,15 +47,6 @@ async def create_user(db: AsyncSession, user: schemas.UserCreate):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating user: {str(e)}"
-=======
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email or phone number already exists"
-            )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating user"
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
         )
 
 async def create_driver(db: AsyncSession, driver: schemas.DriverCreate):
@@ -82,7 +64,6 @@ async def create_driver_document(db: AsyncSession, doc: schemas.DriverDocumentCr
     return db_doc
 
 async def create_ride(db: AsyncSession, ride: schemas.RideCreate):
-<<<<<<< HEAD
     requested_at = ride.requested_at
     if requested_at and requested_at.tzinfo is not None:
         requested_at = requested_at.replace(tzinfo=None)
@@ -103,9 +84,6 @@ async def create_ride(db: AsyncSession, ride: schemas.RideCreate):
         status=ride.status,
         requested_at=ride.requested_at or datetime.now()
     )
-=======
-    db_ride = models.Ride(**ride.dict())
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
     db.add(db_ride)
     await db.commit()
     await db.refresh(db_ride)
