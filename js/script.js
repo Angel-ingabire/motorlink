@@ -472,15 +472,13 @@ window.modal = {
     }
 };
 
-// Error handling
 window.addEventListener('error', function(e) {
     console.error('Global error:', e.error);
-    // You can add global error reporting here
+    // add global error reporting here
 });
 
 window.addEventListener('unhandledrejection', function(e) {
     console.error('Unhandled promise rejection:', e.reason);
-    // You can add global promise rejection handling here
 });
 
 // Expose global functions for backward compatibility
