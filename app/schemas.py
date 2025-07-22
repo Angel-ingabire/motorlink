@@ -23,9 +23,17 @@ class Gender(str, Enum):
 
 class VehicleType(str, Enum):
     """Enum for vehicle types."""
+<<<<<<< HEAD
     motorbike = "motorcycle"
     car = "car"
     shared = "van"
+=======
+    SEDAN = "sedan"
+    SUV = "suv"
+    VAN = "van"
+    LUXURY = "luxury"
+    ELECTRIC = "electric"
+>>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
 
 class RideStatus(str, Enum):
     """Enum for ride statuses."""
@@ -67,6 +75,7 @@ class UserBase(BaseModel):
     date_of_birth: Optional[date] = None
     gender: Optional[Gender] = None
 
+<<<<<<< HEAD
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
@@ -85,13 +94,29 @@ class UserCreate(BaseModel):
     
     class Config:
         extra = "forbid"
+=======
+    @validator('phone_number')
+    def validate_phone_number(cls, v: str) -> str:
+        """Validate phone number contains only digits."""
+        if not v.isdigit():
+            raise ValueError("Phone number must contain only digits")
+        return v
+
+class UserCreate(UserBase):
+    """Schema for creating a user."""
+    pass
+>>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
 
 class UserOut(UserBase):
     """Schema for outputting user data."""
     id: uuid.UUID
 
     class Config:
+<<<<<<< HEAD
         from_attributes = True
+=======
+        orm_mode = True
+>>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
 
 class DriverBase(BaseModel):
     """Base schema for driver data."""
@@ -167,6 +192,7 @@ class RideBase(BaseModel):
             raise ValueError("End time must be after start time")
         return v
 
+<<<<<<< HEAD
 class RideCreate(BaseModel):
     """Schema for creating a ride."""
     passenger_id: uuid.UUID
@@ -191,6 +217,11 @@ class RideCreate(BaseModel):
         if value.tzinfo is not None:
             return value.replace(tzinfo=None)
         return value
+=======
+class RideCreate(RideBase):
+    """Schema for creating a ride."""
+    pass
+>>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
 
 class RideOut(RideBase):
     """Schema for outputting ride data."""
@@ -315,6 +346,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Schema for token payload data."""
     email: Optional[str] = None
+<<<<<<< HEAD
 
 class UserStats(BaseModel):
     """Schema for user statistics."""
@@ -324,3 +356,5 @@ class UserStats(BaseModel):
 
 class UserInDB(UserOut):
     hashed_password: str
+=======
+>>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
