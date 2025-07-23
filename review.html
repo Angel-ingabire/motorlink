@@ -1,14 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reviews - MotorLink</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link href="css/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Inline SVG avatar styles */
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .avatar-blue {
+            background-color: #3B82F6;
+        }
+
+        .avatar-green {
+            background-color: #10B981;
+        }
+
+        .avatar-purple {
+            background-color: #8B5CF6;
+        }
+
+        .avatar-red {
+            background-color: #EF4444;
+        }
+
+        .avatar-yellow {
+            background-color: #F59E0B;
+        }
+    </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- Navigation -->
     <nav class="bg-white shadow-sm border-b">
@@ -97,7 +133,8 @@
                     </div>
                 </div>
                 <div class="text-center">
-                    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" onclick="showReviewForm()">
+                    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                        onclick="showReviewForm()">
                         <i class="fas fa-plus mr-2"></i>
                         Write a Review
                     </button>
@@ -113,40 +150,40 @@
                     <div>
                         <label for="tripDate" class="block text-sm font-medium text-gray-700 mb-2">Trip Date</label>
                         <input type="date" id="tripDate" name="tripDate" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label for="driverName" class="block text-sm font-medium text-gray-700 mb-2">Driver Name</label>
                         <input type="text" id="driverName" name="driverName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="Enter driver's name">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter driver's name">
+                        <input type="hidden" id="rideId" name="rideId">
                     </div>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Overall Rating</label>
-                    <div class="flex items-center space-x-1" id="ratingStars">
-                        <i class="far fa-star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" data-rating="1"></i>
-                        <i class="far fa-star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" data-rating="2"></i>
-                        <i class="far fa-star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" data-rating="3"></i>
-                        <i class="far fa-star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" data-rating="4"></i>
-                        <i class="far fa-star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" data-rating="5"></i>
-                    </div>
-                    <input type="hidden" id="rating" name="rating" value="0">
                 </div>
 
+                <div id="ratingStars" class="text-2xl">
+                    <i class="far fa-star text-gray-300" data-rating="1"></i>
+                    <i class="far fa-star text-gray-300" data-rating="2"></i>
+                    <i class="far fa-star text-gray-300" data-rating="3"></i>
+                    <i class="far fa-star text-gray-300" data-rating="4"></i>
+                    <i class="far fa-star text-gray-300" data-rating="5"></i>
+                </div>
+                <input type="hidden" id="rating" name="rating" value="0">
+                
                 <div class="mb-6">
                     <label for="reviewText" class="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
                     <textarea id="reviewText" name="reviewText" rows="4" required
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Tell us about your experience..."></textarea>
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Tell us about your experience..."></textarea>
                 </div>
 
                 <div class="flex space-x-4">
-                    <button type="button" onclick="hideReviewForm()" class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                    <button type="button" onclick="hideReviewForm()"
+                        class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button type="submit"
+                        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
                         Submit Review
                     </button>
                 </div>
@@ -160,7 +197,7 @@
                 <!-- Review 1 -->
                 <div class="border-b border-gray-200 pb-6">
                     <div class="flex items-start space-x-4">
-                        <img src="https://via.placeholder.com/48x48/3B82F6/FFFFFF?text=AM" alt="User" class="w-12 h-12 rounded-full">
+                        <div class="avatar avatar-blue">AM</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -175,7 +212,8 @@
                                     <i class="fas fa-star"></i>
                                 </div>
                             </div>
-                            <p class="text-gray-700 mb-2">Excellent service! The driver was very professional and arrived on time. The ride was smooth and comfortable. Highly recommend MotorLink!</p>
+                            <p class="text-gray-700 mb-2">Excellent service! The driver was very professional and
+                                arrived on time. The ride was smooth and comfortable. Highly recommend MotorLink!</p>
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Driver: Jean-Claude Uwimana</span>
                                 <span>•</span>
@@ -188,7 +226,7 @@
                 <!-- Review 2 -->
                 <div class="border-b border-gray-200 pb-6">
                     <div class="flex items-start space-x-4">
-                        <img src="https://via.placeholder.com/48x48/10B981/FFFFFF?text=PK" alt="User" class="w-12 h-12 rounded-full">
+                        <div class="avatar avatar-green">PK</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -203,7 +241,9 @@
                                     <i class="far fa-star"></i>
                                 </div>
                             </div>
-                            <p class="text-gray-700 mb-2">Good service overall. The app is easy to use and the fare was reasonable. Only minor issue was the driver took a slightly longer route than expected.</p>
+                            <p class="text-gray-700 mb-2">Good service overall. The app is easy to use and the fare was
+                                reasonable. Only minor issue was the driver took a slightly longer route than expected.
+                            </p>
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Driver: Eric Mutabazi</span>
                                 <span>•</span>
@@ -216,7 +256,7 @@
                 <!-- Review 3 -->
                 <div class="border-b border-gray-200 pb-6">
                     <div class="flex items-start space-x-4">
-                        <img src="https://via.placeholder.com/48x48/8B5CF6/FFFFFF?text=MN" alt="User" class="w-12 h-12 rounded-full">
+                        <div class="avatar avatar-purple">MN</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -231,7 +271,9 @@
                                     <i class="fas fa-star"></i>
                                 </div>
                             </div>
-                            <p class="text-gray-700 mb-2">Amazing experience! The shared ride option is perfect for saving money. The driver was friendly and the other passengers were respectful. Will definitely use again!</p>
+                            <p class="text-gray-700 mb-2">Amazing experience! The shared ride option is perfect for
+                                saving money. The driver was friendly and the other passengers were respectful. Will
+                                definitely use again!</p>
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Driver: Alice Mukamana</span>
                                 <span>•</span>
@@ -244,7 +286,7 @@
                 <!-- Review 4 -->
                 <div class="border-b border-gray-200 pb-6">
                     <div class="flex items-start space-x-4">
-                        <img src="https://via.placeholder.com/48x48/EF4444/FFFFFF?text=DM" alt="User" class="w-12 h-12 rounded-full">
+                        <div class="avatar avatar-red">DM</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -259,7 +301,8 @@
                                     <i class="fas fa-star"></i>
                                 </div>
                             </div>
-                            <p class="text-gray-700 mb-2">Perfect for my daily commute! The tracking feature is very helpful and I always know when my ride will arrive. Great job MotorLink team!</p>
+                            <p class="text-gray-700 mb-2">Perfect for my daily commute! The tracking feature is very
+                                helpful and I always know when my ride will arrive. Great job MotorLink team!</p>
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Driver: Pierre Kamanzi</span>
                                 <span>•</span>
@@ -272,7 +315,7 @@
                 <!-- Review 5 -->
                 <div class="pb-6">
                     <div class="flex items-start space-x-4">
-                        <img src="https://via.placeholder.com/48x48/F59E0B/FFFFFF?text=SU" alt="User" class="w-12 h-12 rounded-full">
+                        <div class="avatar avatar-yellow">SU</div>
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
@@ -287,7 +330,9 @@
                                     <i class="far fa-star"></i>
                                 </div>
                             </div>
-                            <p class="text-gray-700 mb-2">Very reliable service. I've been using MotorLink for months now and it's consistently good. The prices are fair and the drivers are professional.</p>
+                            <p class="text-gray-700 mb-2">Very reliable service. I've been using MotorLink for months
+                                now and it's consistently good. The prices are fair and the drivers are professional.
+                            </p>
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>Driver: Jean-Claude Uwimana</span>
                                 <span>•</span>
@@ -303,4 +348,5 @@
     <script src="js/script.js"></script>
     <script src="js/review.js"></script>
 </body>
+
 </html>

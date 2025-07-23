@@ -1,66 +1,271 @@
-// Dashboard JavaScript for MotorLink
-// Handles ride booking, search, and dashboard functionality
+// Dashboard JavaScript for MotorLink with API integration
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeDashboard();
-});
+// Base API URL
+const API_BASE_URL = 'http://localhost:8000'; // Update with your actual API URL
 
-function initializeDashboard() {
-    // Check if user is logged in
-    if (!checkAuthStatus()) {
+// Helper function for API calls
+async function makeApiRequest(endpoint, method = 'GET', data = null, authToken = null) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    const config = {
+        method,
+        headers,
+    };
+    
+    if (data) {
+        config.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            
+            // Handle validation errors specifically
+            if (response.status === 422 && errorData.detail) {
+                const validationErrors = errorData.detail.map(err => 
+                    `${err.loc[1]}: ${err.msg}`
+                ).join(', ');
+                throw new Error(validationErrors);
+            }
+            
+            throw new Error(errorData.detail || 'API request failed');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+// Main Dashboard Initialization
+async function initializeDashboard() {
+    try {
+        // Check authentication
+        const authToken = localStorage.getItem('motorlink_auth_token');
+        if (!authToken) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Verify token is still valid by making an API call
+        try {
+            await makeApiRequest('/users/me/', 'GET', null, authToken);
+        } catch (error) {
+            // Token is invalid, clear it and redirect
+            localStorage.removeItem('motorlink_auth_token');
+            localStorage.removeItem('motorlink_current_user');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Load user data - this will update the UI
+        const user = await loadUserData(authToken);
+        
+        // Initialize components in parallel for better performance
+        await Promise.allSettled([
+            initializeStats(user.id, authToken),
+            initializeRecentRides(user.id, authToken)
+        ]);
+        
+        // Initialize components with real data
+        await initializeStats(user.id, authToken);
+        await initializeRecentRides(user.id, authToken);
+
+        initializeRideBookingForm(authToken);
+        initializeLocationServices();
+        initializeLocationInputs();
+        initializeRideTypeSelector();
+        
+        // Update UI elements
+        setupEventListeners();
+        
+        // Mark initialization complete
+        document.documentElement.setAttribute('data-init-complete', 'true');
+        
+    } catch (error) {
+        console.error('Dashboard initialization failed:', error);
+        showNotification(
+            error.message || 'Failed to load dashboard', 
+            'error',
+            5000
+        );
+        
+        // If it's an auth error, redirect to login
+        if (error.message.includes('401') || error.message.includes('403')) {
+            clearAuthData();
+            redirectToLogin();
+        }
+    }
+}
+
+// Helper Functions
+function redirectToLogin() {
+    sessionStorage.setItem('redirect_after_login', window.location.pathname);
+    window.location.href = 'login.html';
+}
+
+function clearAuthData() {
+    localStorage.removeItem('motorlink_auth_token');
+    localStorage.removeItem('motorlink_current_user');
+    localStorage.removeItem('motorlink_current_user_id');
+}
+
+function setupEventListeners() {
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+        clearAuthData();
+        redirectToLogin();
+    });
+}
+
+// User Functions
+async function loadUserData(authToken) {
+    try {
+        const user = await makeApiRequest('/users/me/', 'GET', null, authToken);
+        
+        // Debug: Log the received user data
+        console.log("User data received:", user);
+        
+        // Update the welcome message
+        const welcomeMessage = document.querySelector('.text-2xl.font-bold.text-gray-900.mb-2');
+        if (welcomeMessage && user?.full_name) {
+            const firstName = user.full_name.split(' ')[0] || 'User';
+            welcomeMessage.textContent = `Welcome back, ${firstName}!`;
+        }
+        
+        // Update the profile name in the navigation
+        const profileName = document.querySelector('#profile-menu span.hidden.md\\:block');
+        if (profileName && user?.full_name) {
+            profileName.textContent = user.full_name.split(' ')[0] || 'User';
+        }
+        
+        // Update the profile image (if available)
+        const profileImage = document.querySelector('#profile-menu img');
+        if (profileImage && user?.profile_image_url) {
+            profileImage.src = user.profile_image_url;
+        } else if (profileImage) {
+            // Fallback to generated avatar if no image
+            const firstName = user?.full_name?.split(' ')[0] || 'User';
+            profileImage.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}&background=3B82F6&color=ffffff&rounded=true`;
+        }
+        
+        return user;
+    } catch (error) {
+        console.error('Failed to load user data:', error);
+        throw error;
+    }
+}
+
+// Stats Functions
+async function initializeStats(userId, authToken) {
+    try {
+        const stats = await makeApiRequest(`/stats/?user_id=${userId}`, 'GET', null, authToken);
+        displayStats(stats);
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+        throw error;
+    }
+}
+
+function displayStats(stats) {
+    const totalTripsElement = document.querySelector('.stat-total-trips');
+    const totalSpentElement = document.querySelector('.stat-total-spent');
+    const avgRatingElement = document.querySelector('.stat-avg-rating');
+    
+    if (totalTripsElement) totalTripsElement.textContent = stats.total_rides || 0;
+    if (totalSpentElement) totalSpentElement.textContent = `RWF ${(stats.total_spent || 0).toLocaleString()}`;
+    if (avgRatingElement) avgRatingElement.textContent = (stats.avg_rating || 0).toFixed(1);
+}
+
+// Ride Functions
+async function initializeRecentRides(userId, authToken) {
+    try {
+        const rides = await makeApiRequest(`/rides/?user_id=${userId}&limit=3`, 'GET', null, authToken);
+        displayRecentRides(rides);
+    } catch (error) {
+        console.error('Failed to load recent rides:', error);
+        throw error;
+    }
+}
+
+function displayRecentRides(rides) {
+    const container = document.querySelector('.recent-rides-container');
+    if (!container) return;
+    
+    if (!rides || rides.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-route text-4xl mb-4"></i>
+                <p>No recent rides yet</p>
+            </div>
+        `;
         return;
     }
     
-    initializeRideBookingForm();
-    initializeLocationServices();
-    initializeRecentRides();
-    initializeStats();
-    loadUserData();
+    container.innerHTML = rides.map(ride => `
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+            <div class="flex items-center space-x-4">
+                <div class="bg-blue-100 p-2 rounded-full">
+                    <i class="fas fa-car text-blue-600"></i>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">${ride.start_location} → ${ride.end_location}</p>
+                    <p class="text-sm text-gray-500">${formatDate(ride.requested_at)} • ${formatTime(ride.requested_at)}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="font-medium text-gray-900">RWF ${ride.fare.toLocaleString()}</p>
+                <div class="flex items-center">
+                    ${generateStarRating(ride.rating || 0)}
+                    <span class="ml-1 text-sm text-gray-500">${(ride.rating || 0).toFixed(1)}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-// Check authentication status
-function checkAuthStatus() {
-    const isLoggedIn = storage.get('isLoggedIn');
-    const user = storage.get('user');
-    
-    if (!isLoggedIn || !user) {
-        window.location.href = 'login.html';
-        return false;
+// Location Services
+function initializeLocationServices() {
+    if (!navigator.geolocation) {
+        console.warn("Geolocation not supported");
+        return;
     }
-    
-    return true;
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            localStorage.setItem('last_known_location', 
+                JSON.stringify({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                })
+            );
+        },
+        (error) => {
+            console.error("Geolocation error:", error);
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+    );
 }
 
-// Initialize ride booking form
-function initializeRideBookingForm() {
-    const rideBookingForm = document.getElementById('rideBookingForm');
-    
-    if (rideBookingForm) {
-        rideBookingForm.addEventListener('submit', handleRideBooking);
-        
-        // Initialize form inputs
-        initializeLocationInputs();
-        initializeRideTypeSelector();
-        initializeScheduleToggle();
-    }
-}
-
-// Initialize location inputs with suggestions
 function initializeLocationInputs() {
     const pickupInput = document.getElementById('pickup');
     const destinationInput = document.getElementById('destination');
+    const useCurrentLocationBtn = document.getElementById('useCurrentLocation');
     
-    if (pickupInput) {
-        initializeLocationInput(pickupInput, 'pickup');
-    }
-    
-    if (destinationInput) {
-        initializeLocationInput(destinationInput, 'destination');
-    }
+    if (pickupInput) setupLocationInput(pickupInput, 'pickup');
+    if (destinationInput) setupLocationInput(destinationInput, 'destination');
+    if (useCurrentLocationBtn) useCurrentLocationBtn.addEventListener('click', handleCurrentLocation);
 }
 
-// Initialize individual location input
-function initializeLocationInput(input, type) {
+function setupLocationInput(input, type) {
     let timeout;
     
     input.addEventListener('input', function() {
@@ -75,7 +280,6 @@ function initializeLocationInput(input, type) {
     });
     
     input.addEventListener('blur', function() {
-        // Hide suggestions after a delay to allow for selection
         setTimeout(() => {
             hideLocationSuggestions(this);
         }, 200);
@@ -88,11 +292,42 @@ function initializeLocationInput(input, type) {
     });
 }
 
-// Show location suggestions
+async function handleCurrentLocation() {
+    const pickupInput = document.getElementById('pickup');
+    
+    if (!pickupInput) return;
+    
+    try {
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        
+        const address = await reverseGeocode(position.coords.latitude, position.coords.longitude);
+        
+        pickupInput.value = address;
+        pickupInput.dataset.lat = position.coords.latitude;
+        pickupInput.dataset.lng = position.coords.longitude;
+        
+        showNotification('Current location set successfully', 'success');
+        
+    } catch (error) {
+        console.error("Error getting location:", error);
+        showNotification('Unable to get your location. Please enter manually.', 'error');
+    }
+}
+
+async function reverseGeocode(lat, lng) {
+    // In a real implementation, you would call a geocoding API here
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve('Current Location, Kigali');
+        }, 500);
+    });
+}
+
 function showLocationSuggestions(input, query, type) {
     const suggestions = getLocationSuggestions(query);
     
-    // Remove existing suggestions
     hideLocationSuggestions(input);
     
     if (suggestions.length === 0) return;
@@ -113,27 +348,18 @@ function showLocationSuggestions(input, query, type) {
         
         item.addEventListener('click', function() {
             input.value = suggestion.name;
-            hideLocationSuggestions(input);
-            
-            // Store selected location data
             input.dataset.lat = suggestion.lat;
             input.dataset.lng = suggestion.lng;
+            hideLocationSuggestions(input);
         });
         
         suggestionsDiv.appendChild(item);
     });
     
-    // Position suggestions
-    const inputRect = input.getBoundingClientRect();
-    suggestionsDiv.style.top = '100%';
-    suggestionsDiv.style.left = '0';
-    suggestionsDiv.style.right = '0';
-    
     input.parentElement.style.position = 'relative';
     input.parentElement.appendChild(suggestionsDiv);
 }
 
-// Hide location suggestions
 function hideLocationSuggestions(input) {
     const existing = input.parentElement.querySelector('.location-suggestions');
     if (existing) {
@@ -141,7 +367,6 @@ function hideLocationSuggestions(input) {
     }
 }
 
-// Get location suggestions (mock data)
 function getLocationSuggestions(query) {
     const locations = [
         { name: 'Kigali Convention Centre', address: 'Kimisagara, Kigali', lat: -1.9441, lng: 30.0619 },
@@ -162,372 +387,174 @@ function getLocationSuggestions(query) {
     ).slice(0, 5);
 }
 
-// Initialize ride type selector
-function initializeRideTypeSelector() {
-    const rideTypeSelect = document.getElementById('rideType');
-    
-    if (rideTypeSelect) {
-        rideTypeSelect.addEventListener('change', function() {
-            updatePassengerOptions(this.value);
-            updateEstimatedPrice();
-        });
-    }
-}
-
-// Update passenger options based on ride type
-function updatePassengerOptions(rideType) {
-    const passengersSelect = document.getElementById('passengers');
-    
-    if (!passengersSelect) return;
-    
-    const options = {
-        'motorbike': [
-            { value: '1', text: '1 Passenger' }
-        ],
-        'car': [
-            { value: '1', text: '1 Passenger' },
-            { value: '2', text: '2 Passengers' },
-            { value: '3', text: '3 Passengers' },
-            { value: '4', text: '4 Passengers' }
-        ],
-        'shared': [
-            { value: '1', text: '1 Passenger' },
-            { value: '2', text: '2 Passengers' }
-        ]
-    };
-    
-    const availableOptions = options[rideType] || options['motorbike'];
-    
-    passengersSelect.innerHTML = '';
-    availableOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.textContent = option.text;
-        passengersSelect.appendChild(optionElement);
-    });
-}
-
-// Initialize schedule toggle
-function initializeScheduleToggle() {
-    const rideTimeSelect = document.getElementById('rideTime');
-    
-    if (rideTimeSelect) {
-        rideTimeSelect.addEventListener('change', function() {
-            if (this.value === 'scheduled') {
-                showScheduleOptions();
-            } else {
-                hideScheduleOptions();
-            }
-        });
-    }
-}
-
-// Show schedule options
-function showScheduleOptions() {
+// Ride Booking
+function initializeRideBookingForm(authToken) {
     const form = document.getElementById('rideBookingForm');
-    const existingSchedule = form.querySelector('.schedule-options');
-    
-    if (existingSchedule) return;
-    
-    const scheduleDiv = document.createElement('div');
-    scheduleDiv.className = 'schedule-options grid grid-cols-1 md:grid-cols-2 gap-4 mt-4';
-    scheduleDiv.innerHTML = `
-        <div>
-            <label for="scheduleDate" class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-calendar text-blue-600 mr-2"></i>
-                Date
-            </label>
-            <input type="date" id="scheduleDate" name="scheduleDate" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                   min="${new Date().toISOString().split('T')[0]}">
-        </div>
-        <div>
-            <label for="scheduleTime" class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-clock text-blue-600 mr-2"></i>
-                Time
-            </label>
-            <input type="time" id="scheduleTime" name="scheduleTime" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-    `;
-    
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.parentElement.insertBefore(scheduleDiv, submitButton.parentElement);
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => handleRideBooking(e, authToken));
 }
 
-// Hide schedule options
-function hideScheduleOptions() {
-    const scheduleOptions = document.querySelector('.schedule-options');
-    if (scheduleOptions) {
-        scheduleOptions.remove();
-    }
-}
-
-// Handle ride booking form submission
-async function handleRideBooking(e) {
+async function handleRideBooking(e, authToken) {
     e.preventDefault();
-    
     const form = e.target;
     const submitButton = form.querySelector('button[type="submit"]');
     const originalText = submitButton.innerHTML;
     
-    // Show loading state
-    loading.show(submitButton, 'Searching for rides...');
-    
     try {
-        // Get form data
+        // Show loading state
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        
+        const user = JSON.parse(localStorage.getItem('motorlink_current_user'));
+        if (!user?.id) throw new Error('User not authenticated');
+
         const formData = new FormData(form);
-        const bookingData = {
-            pickup: formData.get('pickup'),
-            destination: formData.get('destination'),
-            rideType: formData.get('rideType'),
-            passengers: formData.get('passengers'),
-            rideTime: formData.get('rideTime'),
-            scheduleDate: formData.get('scheduleDate'),
-            scheduleTime: formData.get('scheduleTime')
-        };
         
         // Validate form
-        const errors = validateBookingForm(bookingData);
+        const errors = validateBookingForm(formData);
         if (errors.length > 0) {
             throw new Error(errors[0]);
         }
         
-        // Store booking data for results page
-        storage.set('currentBooking', bookingData);
+        // Get coordinates from selected locations or use defaults
+        const pickupLat = parseFloat(document.getElementById('pickup').dataset.lat) || -1.9441;
+        const pickupLng = parseFloat(document.getElementById('pickup').dataset.lng) || 30.0606;
+        const destLat = parseFloat(document.getElementById('destination').dataset.lat) || -1.9441;
+        const destLng = parseFloat(document.getElementById('destination').dataset.lng) || 30.0606;
+
+        const rideType = formData.get('rideType');
         
-        // Simulate API call
-        await simulateRideSearch(bookingData);
+        // Create payload that matches the RideCreate schema
+        const rideRequest = {
+            passenger_id: user.id,
+            pickup_location_name: formData.get('pickup'),
+            pickup_address: formData.get('pickup'),
+            pickup_latitude: pickupLat,
+            pickup_longitude: pickupLng,
+            destination_location_name: formData.get('destination'),
+            destination_address: formData.get('destination'),
+            destination_latitude: destLat,
+            destination_longitude: destLng,
+            ride_type: rideType,
+            estimated_fare: calculateEstimatedFare(formData.get('rideType'), formData.get('passengers')),
+            requested_at: new Date().toISOString()
+        };
         
-        // Show success message
-        showNotification('Finding available rides...', 'success');
+        const response = await makeApiRequest('/rides/', 'POST', rideRequest, authToken);
+        showNotification('Ride booked successfully!', 'success');
         
-        // Redirect to results page
-        setTimeout(() => {
-            window.location.href = 'results.html';
-        }, 1000);
+        localStorage.setItem('current_ride', JSON.stringify(response));
+        setTimeout(() => window.location.href = 'tracking.html', 1500);
         
     } catch (error) {
-        showNotification(error.message, 'error');
-        loading.hide(submitButton, originalText);
+        console.error('Ride booking failed:', error);
+        showNotification(error.message || 'Failed to book ride', 'error');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
     }
 }
 
-// Validate booking form
-function validateBookingForm(data) {
+function validateBookingForm(formData) {
     const errors = [];
     
-    if (!data.pickup || data.pickup.trim().length < 2) {
+    if (!formData.get('pickup') || formData.get('pickup').trim().length < 2) {
         errors.push('Please enter a pickup location');
     }
     
-    if (!data.destination || data.destination.trim().length < 2) {
+    if (!formData.get('destination') || formData.get('destination').trim().length < 2) {
         errors.push('Please enter a destination');
     }
     
-    if (data.pickup === data.destination) {
+    if (formData.get('pickup') === formData.get('destination')) {
         errors.push('Pickup and destination cannot be the same');
     }
     
-    if (!data.rideType) {
+    if (!formData.get('rideType')) {
         errors.push('Please select a ride type');
-    }
-    
-    if (data.rideTime === 'scheduled') {
-        if (!data.scheduleDate || !data.scheduleTime) {
-            errors.push('Please select date and time for scheduled ride');
-        }
-        
-        const scheduledDateTime = new Date(`${data.scheduleDate}T${data.scheduleTime}`);
-        if (scheduledDateTime <= new Date()) {
-            errors.push('Scheduled time must be in the future');
-        }
     }
     
     return errors;
 }
 
-// Simulate ride search API call
-async function simulateRideSearch(bookingData) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({ success: true, availableRides: 4 });
-        }, 1500);
+function calculateEstimatedFare(rideType, passengers) {
+    const basePrices = {
+        'motorbike': 2500,
+        'car': 4000,
+        'shared': 1800
+    };
+    let price = basePrices[rideType] || 2500;
+    if (rideType === 'car') price += (parseInt(passengers) - 1) * 500;
+    return price;
+}
+
+// Ride Type Selector
+function initializeRideTypeSelector() {
+    const rideTypeSelect = document.getElementById('rideType');
+    if (!rideTypeSelect) return;
+
+    rideTypeSelect.addEventListener('change', function() {
+        updatePassengerOptions(this.value);
+        updateEstimatedPrice();
     });
 }
 
-// Initialize location services
-function initializeLocationServices() {
-    const useCurrentLocationBtn = document.getElementById('useCurrentLocation');
+function updatePassengerOptions(rideType) {
+    const passengersSelect = document.getElementById('passengers');
+    if (!passengersSelect) return;
     
-    if (useCurrentLocationBtn) {
-        useCurrentLocationBtn.addEventListener('click', handleCurrentLocation);
+    passengersSelect.innerHTML = '';
+    
+    const maxPassengers = rideType === 'motorbike' ? 1 : 
+                         rideType === 'car' ? 4 : 
+                         3; // for shared rides
+    
+    for (let i = 1; i <= maxPassengers; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i === 1 ? '1 Passenger' : `${i} Passengers`;
+        passengersSelect.appendChild(option);
     }
 }
 
-// Handle current location
-async function handleCurrentLocation() {
-    const pickupInput = document.getElementById('pickup');
+function updateEstimatedPrice() {
+    const rideType = document.getElementById('rideType').value;
+    const passengers = parseInt(document.getElementById('passengers').value) || 1;
+    const priceElement = document.getElementById('estimatedPrice');
     
-    if (!pickupInput) return;
+    if (!priceElement) return;
     
-    try {
-        const position = await utils.getCurrentLocation();
-        
-        // Reverse geocode to get address
-        const address = await reverseGeocode(position.latitude, position.longitude);
-        
-        pickupInput.value = address;
-        pickupInput.dataset.lat = position.latitude;
-        pickupInput.dataset.lng = position.longitude;
-        
-        showNotification('Current location set successfully', 'success');
-        
-    } catch (error) {
-        showNotification('Unable to get your location. Please enter manually.', 'error');
-    }
-}
-
-// Reverse geocode coordinates to address (mock implementation)
-async function reverseGeocode(lat, lng) {
-    // This would typically call a geocoding API
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve('Current Location, Kigali');
-        }, 500);
-    });
-}
-
-// Initialize recent rides
-function initializeRecentRides() {
-    const recentRides = getRecentRides();
-    displayRecentRides(recentRides);
-}
-
-// Get recent rides from storage
-function getRecentRides() {
-    const rides = storage.get('recentRides') || [];
-    return rides.slice(0, 3); // Show only last 3 rides
-}
-
-// Display recent rides
-function displayRecentRides(rides) {
-    const container = document.querySelector('.recent-rides-container');
-    if (!container) return;
-    
-    if (rides.length === 0) {
-        container.innerHTML = `
-            <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-route text-4xl mb-4"></i>
-                <p>No recent rides yet</p>
-                <p class="text-sm">Your ride history will appear here</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = rides.map(ride => `
-        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <div class="flex items-center space-x-4">
-                <div class="bg-${getVehicleColor(ride.vehicleType)}-100 p-2 rounded-full">
-                    <i class="fas fa-${getVehicleIcon(ride.vehicleType)} text-${getVehicleColor(ride.vehicleType)}-600"></i>
-                </div>
-                <div>
-                    <p class="font-medium text-gray-900">${ride.route}</p>
-                    <p class="text-sm text-gray-500">${utils.formatDate(ride.date)} • ${utils.formatTime(ride.date)}</p>
-                </div>
-            </div>
-            <div class="text-right">
-                <p class="font-medium text-gray-900">${utils.formatCurrency(ride.fare)}</p>
-                <div class="flex items-center">
-                    ${generateStarRating(ride.rating)}
-                    <span class="ml-1 text-sm text-gray-500">${ride.rating}</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Initialize stats
-function initializeStats() {
-    const stats = getUserStats();
-    displayStats(stats);
-}
-
-// Get user stats
-function getUserStats() {
-    const user = storage.get('user');
-    const rides = storage.get('recentRides') || [];
-    
-    return {
-        totalTrips: rides.length,
-        totalSpent: rides.reduce((sum, ride) => sum + ride.fare, 0),
-        averageRating: rides.length > 0 ? rides.reduce((sum, ride) => sum + ride.rating, 0) / rides.length : 0,
-        favoriteRoute: getMostFrequentRoute(rides)
-    };
-}
-
-// Display stats
-function displayStats(stats) {
-    const statsElements = {
-        totalTrips: document.querySelector('.stat-total-trips'),
-        totalSpent: document.querySelector('.stat-total-spent'),
-        averageRating: document.querySelector('.stat-rating'),
-        favoriteRoute: document.querySelector('.stat-favorite-route')
+    const basePrices = {
+        'motorbike': 2500,
+        'car': 4000,
+        'shared': 1800
     };
     
-    if (statsElements.totalTrips) {
-        statsElements.totalTrips.textContent = stats.totalTrips;
+    let price = basePrices[rideType] || 2500;
+    
+    // Adjust for passengers (for cars)
+    if (rideType === 'car' && passengers > 1) {
+        price += (passengers - 1) * 500;
     }
     
-    if (statsElements.totalSpent) {
-        statsElements.totalSpent.textContent = utils.formatCurrency(stats.totalSpent);
-    }
-    
-    if (statsElements.averageRating) {
-        statsElements.averageRating.textContent = stats.averageRating.toFixed(1);
-    }
-    
-    if (statsElements.favoriteRoute) {
-        statsElements.favoriteRoute.textContent = stats.favoriteRoute || 'No data yet';
-    }
+    priceElement.textContent = `RWF ${price.toLocaleString()}`;
 }
 
-// Load user data
-function loadUserData() {
-    const user = storage.get('user');
-    if (!user) return;
-    
-    // Update user name in navigation
-    const userNameElement = document.querySelector('.user-name');
-    if (userNameElement) {
-        userNameElement.textContent = user.name;
-    }
-    
-    // Update welcome message
-    const welcomeMessage = document.querySelector('.welcome-message');
-    if (welcomeMessage) {
-        welcomeMessage.textContent = `Welcome back, ${user.name.split(' ')[0]}!`;
-    }
+// UI Helpers
+function showNotification(message, type = 'info', duration = 3000) {
+    // In a real implementation, you would show a proper notification UI
+    console.log(`${type.toUpperCase()}: ${message}`);
 }
 
-// Utility functions
-function getVehicleIcon(type) {
-    const icons = {
-        'motorbike': 'motorcycle',
-        'car': 'car',
-        'shared': 'users'
-    };
-    return icons[type] || 'car';
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function getVehicleColor(type) {
-    const colors = {
-        'motorbike': 'blue',
-        'car': 'green',
-        'shared': 'purple'
-    };
-    return colors[type] || 'gray';
+function formatTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 function generateStarRating(rating) {
@@ -552,82 +579,7 @@ function generateStarRating(rating) {
     return starsHTML;
 }
 
-function getMostFrequentRoute(rides) {
-    if (rides.length === 0) return null;
-    
-    const routeCount = {};
-    rides.forEach(ride => {
-        routeCount[ride.route] = (routeCount[ride.route] || 0) + 1;
-    });
-    
-    return Object.keys(routeCount).reduce((a, b) => routeCount[a] > routeCount[b] ? a : b);
-}
-
-// Update estimated price based on selections
-function updateEstimatedPrice() {
-    const rideType = document.getElementById('rideType').value;
-    const passengers = document.getElementById('passengers').value;
-    
-    if (!rideType) return;
-    
-    const basePrices = {
-        'motorbike': 2500,
-        'car': 4000,
-        'shared': 1800
-    };
-    
-    let price = basePrices[rideType] || 2500;
-    
-    // Adjust for passengers (for cars)
-    if (rideType === 'car' && passengers > 1) {
-        price += (passengers - 1) * 500;
-    }
-    
-    const estimatedPriceElement = document.getElementById('estimatedPrice');
-    if (estimatedPriceElement) {
-        estimatedPriceElement.textContent = utils.formatCurrency(price);
-    }
-}
-
-// Add sample data for demo purposes
-function addSampleData() {
-    const sampleRides = [
-        {
-            id: '1',
-            route: 'Kimisagara → Kigali City',
-            date: new Date('2025-01-10T14:30:00'),
-            fare: 2500,
-            rating: 5.0,
-            vehicleType: 'motorbike',
-            driver: 'Jean-Claude Uwimana'
-        },
-        {
-            id: '2',
-            route: 'Kacyiru → Remera',
-            date: new Date('2025-01-08T09:15:00'),
-            fare: 3200,
-            rating: 4.0,
-            vehicleType: 'car',
-            driver: 'Alice Mukamana'
-        },
-        {
-            id: '3',
-            route: 'Nyamirambo → Airport',
-            date: new Date('2025-01-05T06:00:00'),
-            fare: 4800,
-            rating: 5.0,
-            vehicleType: 'shared',
-            driver: 'Pierre Kamanzi'
-        }
-    ];
-    
-    if (!storage.get('recentRides')) {
-        storage.set('recentRides', sampleRides);
-    }
-}
-
-// Initialize sample data on first load
-if (!storage.get('dataInitialized')) {
-    addSampleData();
-    storage.set('dataInitialized', true);
-}
+// Initialize on DOM load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+});
