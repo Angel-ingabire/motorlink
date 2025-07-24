@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 --
 -- PostgreSQL database dump
 --
@@ -1492,3 +1493,6 @@ ALTER TABLE ONLY public.user_sessions
 -- PostgreSQL database dump complete
 --
 
+=======
+
+>>>>>>> 75718d48233b220e975d0d496d1c057504343a44

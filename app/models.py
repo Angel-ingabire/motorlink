@@ -191,10 +191,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     full_name = Column(String(255), nullable=False)
@@ -223,29 +219,12 @@ class User(Base):
     notifications = relationship("Notification", back_populates="user")
     communications = relationship("CommunicationLog", back_populates="user")
     audit_logs = relationship("AuditLog", back_populates="user")
-<<<<<<< HEAD
-=======
-=======
-    email = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    full_name = Column(String)
-    phone_number = Column(String, unique=True)
-    user_type = Column(String)
-    profile_image_url = Column(String, nullable=True)
-    date_of_birth = Column(Date, nullable=True)
-    gender = Column(String, nullable=True)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
 
 class Driver(Base):
     """Represents a driver with vehicle information."""
     __tablename__ = "drivers"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), unique=True)
     license_number = Column(String(50), unique=True, nullable=False)
     license_expiry = Column(Date, nullable=False)
@@ -291,19 +270,6 @@ class Driver(Base):
             ).all()
         finally:
             db.close()
-<<<<<<< HEAD
-=======
-=======
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    license_number = Column(String, unique=True)
-    license_expiry = Column(Date)
-    vehicle_type = Column(String)
-    vehicle_make = Column(String, nullable=True)
-    vehicle_model = Column(String, nullable=True)
-    vehicle_year = Column(Integer, nullable=True)
-    vehicle_plate = Column(String)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
 
 class DriverDocument(Base):
     """Stores documents associated with drivers."""
@@ -311,10 +277,6 @@ class DriverDocument(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     driver_id = Column(UUID(as_uuid=True), ForeignKey('drivers.id'))
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
     document_type = Column(SQLAlchemyEnum(DocumentTypeEnum))
     document_url = Column(String(500), nullable=False)
     verification_status = Column(SQLAlchemyEnum(VerificationStatusEnum), default=VerificationStatusEnum.pending)
@@ -348,26 +310,12 @@ class DriverEarnings(Base):
     # Relationships
     driver = relationship("Driver", back_populates="earnings")
     ride = relationship("Ride", back_populates="earnings")
-<<<<<<< HEAD
-=======
-=======
-    document_type = Column(String)
-    document_number = Column(String)
-    issue_date = Column(Date)
-    expiry_date = Column(Date)
-    document_url = Column(String, nullable=True)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
 
 class Ride(Base):
     """Represents a ride between passenger and driver."""
     __tablename__ = "rides"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
     passenger_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     driver_id = Column(UUID(as_uuid=True), ForeignKey('drivers.id'))
     ride_type = Column(SQLAlchemyEnum(VehicleTypeEnum), nullable=False)
@@ -470,28 +418,6 @@ class PaymentMethod(Base):
     # Relationships
     user = relationship("User", back_populates="payment_methods")
     payments = relationship("Payment", back_populates="payment_method")
-<<<<<<< HEAD
-=======
-=======
-    passenger_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    driver_id = Column(UUID(as_uuid=True), ForeignKey('drivers.id'))
-    start_location = Column(String)
-    end_location = Column(String)
-    start_time = Column(DateTime)
-    end_time = Column(DateTime, nullable=True)
-    status = Column(String)
-    fare = Column(Float)
-
-class RideStatus(Base):
-    """Tracks status changes for rides."""
-    __tablename__ = "ride_status"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    ride_id = Column(UUID(as_uuid=True), ForeignKey('rides.id'))
-    status = Column(String)
-    updated_at = Column(DateTime)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
 
 class Payment(Base):
     """Stores payment information for rides."""
@@ -499,10 +425,6 @@ class Payment(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     ride_id = Column(UUID(as_uuid=True), ForeignKey('rides.id'))
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     payment_method_id = Column(UUID(as_uuid=True), ForeignKey('payment_methods.id'))
     amount = Column(Numeric(10, 2), nullable=False)
@@ -706,46 +628,4 @@ class SystemMetric(Base):
     metric_value = Column(Numeric(15, 4), nullable=False)
     metric_unit = Column(String(50))
     tags = Column(JSON, server_default=text("'{}'::jsonb"))
-<<<<<<< HEAD
     recorded_at = Column(DateTime, server_default=func.now())
-=======
-    recorded_at = Column(DateTime, server_default=func.now())
-=======
-    amount = Column(Float)
-    payment_method = Column(String)
-    payment_status = Column(String)
-    payment_date = Column(DateTime)
-
-class Vehicle(Base):
-    """Represents a vehicle owned by a driver."""
-    __tablename__ = "vehicles"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    driver_id = Column(UUID(as_uuid=True), ForeignKey('drivers.id'))
-    vehicle_type = Column(String)
-    vehicle_make = Column(String)
-    vehicle_model = Column(String)
-    vehicle_year = Column(Integer)
-    vehicle_plate = Column(String)
-
-class Feedback(Base):
-    """Stores feedback from users about rides."""
-    __tablename__ = "feedback"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    ride_id = Column(UUID(as_uuid=True), ForeignKey('rides.id'))
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    rating = Column(Integer)
-    comment = Column(String, nullable=True)
-
-class Location(Base):
-    """Tracks user locations for ride matching."""
-    __tablename__ = "locations"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    latitude = Column(Float)
-    longitude = Column(Float)
-    timestamp = Column(DateTime)
->>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
->>>>>>> 5f872c937dc8c185cbc70fecb98a21c71551cf84
