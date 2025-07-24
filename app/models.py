@@ -718,3 +718,4 @@ class Location(Base):
     longitude = Column(Float)
     timestamp = Column(DateTime)
 >>>>>>> 2f868d27baf68fa9ba71d12ce7ba2fa2b095c3b8
+
