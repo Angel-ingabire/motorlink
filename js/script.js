@@ -472,10 +472,9 @@ window.modal = {
     }
 };
 
-window.addEventListener('error', function(e) {
-    console.error('Global error:', e.error);
-    // add global error reporting here
-});
+window.onerror = function (message, source, lineno, colno, error) {
+  console.error("Global error:", message, "at", source, ":", lineno, ":", colno, error);
+};
 
 window.addEventListener('unhandledrejection', function(e) {
     console.error('Unhandled promise rejection:', e.reason);

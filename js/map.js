@@ -1,5 +1,5 @@
 // Global variables
-let map;
+let map = null;
 let userMarker;
 let destinationMarker;
 let routeLayer;
@@ -18,6 +18,56 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeTracking();
   }
 });
+
+function initializeTracking() {
+  initializeTrackingMap();
+  setupCancelRideModal();
+  startLocationTracking();
+  updateTripDetails();
+  updateCurrentTime();
+}
+
+
+function initializeTrackingMap() {
+  if (!rideData.pickup?.coordinates || !rideData.destination?.coordinates) {
+    console.warn('Missing coordinates - using default view');
+    rideData.pickup = rideData.pickup || {};
+    rideData.destination = rideData.destination || {};
+    rideData.pickup.coordinates = rideData.pickup.coordinates || [-1.9441, 30.0619]; // Default Kigali coords
+    rideData.destination.coordinates = rideData.destination.coordinates || [-1.9403, 30.0654]; // Nearby point
+  }
+
+  const mapContainer = document.getElementById('mapContainer');
+  if (!mapContainer || mapContainer.offsetParent === null) {
+    console.error('Map container not found or not visible');
+    return;
+  }
+
+  if (map && typeof map.remove === 'function') {
+    map.remove();
+  }
+
+  map = L.map('map').setView([-1.9441, 30.0619], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const pickupCoords = [rideData.pickup.lat, rideData.pickup.lng];
+  const destinationCoords = [rideData.destination.lat, rideData.destination.lng];
+
+  if (pickupCoords) {
+    L.marker(pickupCoords).addTo(map).bindPopup('Pickup Location');
+  }
+
+  if (destCoords) {
+    L.marker(destCoords).addTo(map).bindPopup('Destination');
+  }
+
+  if (pickupCoords && destCoords) {
+    map.fitBounds([pickupCoords, destCoords], { padding: [50, 50] });
+  }
+}
 
 // Dashboard functionality
 function initializeDashboard() {
@@ -227,7 +277,7 @@ function setupCurrentLocationButton() {
 
           // Reverse geocode to get location name
           try {
-            let locationName = await reverseGeocode(lng, lat);
+            let locationName = await reverseGeocode(lat, lng);
             // Fallback if reverse geocode fails
             if (!locationName || locationName === "Nearby location") {
               locationName = "Current Location";
@@ -316,88 +366,6 @@ function setupFormSubmission() {
   }
 }
 
-// Tracking functionality
-function initializeTracking() {
-  initializeTrackingMap();
-  setupCancelRideModal();
-  startLocationTracking();
-  updateTripDetails();
-  updateCurrentTime();
-}
-
-// Initialize tracking map with Leaflet
-function initializeTrackingMap() {
-  const pickup = getQueryParam("pickup");
-  const destination = getQueryParam("destination");
-
-  if (!pickup || !destination) {
-    alert("Trip information is missing.");
-    return;
-  }
-
-  const pickupCoords = pickup.split(",").map(Number).reverse(); // Leaflet uses [lat, lng]
-  const destCoords = destination.split(",").map(Number).reverse();
-
-  // Initialize map
-  map = L.map("map").setView(pickupCoords, 13);
-
-  // Add OpenStreetMap tiles
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
-
-  // Pickup marker (green, Font Awesome)
-  L.marker(pickupCoords, {
-    icon: L.divIcon({
-      className: "pickup-marker",
-      html: `
-        <div class="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full border-2 border-white shadow-md">
-          <i class="fas fa-map-marker-alt text-green-600 text-lg"></i>
-        </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
-    }),
-  })
-    .bindPopup("Pickup Location")
-    .addTo(map);
-
-  // Destination marker (red, Font Awesome)
-  destinationMarker = L.marker(destCoords, {
-    icon: L.divIcon({
-      className: "destination-marker",
-      html: `
-        <div class="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full border-2 border-white shadow-md">
-          <i class="fas fa-map-marker-alt text-red-600 text-lg"></i>
-        </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
-    }),
-  })
-    .bindPopup("Destination")
-    .addTo(map);
-
-  // User marker (blue, Font Awesome motorcycle)
-  userMarker = L.marker(pickupCoords, {
-    icon: L.divIcon({
-      className: "user-marker",
-      html: `
-        <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full border-2 border-white shadow-md">
-          <i class="fas fa-map-marker-alt text-blue-600 text-lg"></i>
-        </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
-    }),
-  })
-    .bindPopup("Your Location")
-    .addTo(map);
-
-  // Get and display route
-  displayRoute(pickupCoords, destCoords);
-}
-
 // Display route on map using OSRM
 async function displayRoute(start, end) {
   try {
@@ -454,24 +422,28 @@ function startLocationTracking() {
   document.getElementById("rideStatus").textContent = "Tracking Active";
 }
 
-// Update user location on map and UI
 function updateUserLocation(position) {
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
   const speed = position.coords.speed || 0;
 
-  userLocation = [lat, lng]; // Leaflet uses [lat, lng]
+  userLocation = [lat, lng];
 
   // Update marker position
   if (userMarker) {
     userMarker.setLatLng(userLocation);
   }
 
-  // Update UI with current location
-  document.getElementById("currentLat").textContent = lat.toFixed(6);
-  document.getElementById("currentLng").textContent = lng.toFixed(6);
-  document.getElementById("currentSpeed").textContent = `${Math.round(speed * 3.6)} km/h`; // Convert m/s to km/h
-  document.getElementById("lastUpdated").textContent = new Date().toLocaleTimeString();
+  // Safely update UI elements if they exist
+  const updateIfExists = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  updateIfExists("currentLat", lat.toFixed(6));
+  updateIfExists("currentLng", lng.toFixed(6));
+  updateIfExists("currentSpeed", `${Math.round(speed * 3.6)} km/h`);
+  updateIfExists("lastUpdated", new Date().toLocaleTimeString());
 
   // Add live update
   addLiveUpdate("Location updated", "Your position has been updated");
@@ -485,22 +457,18 @@ function updateUserLocation(position) {
 // Handle location errors (same as before)
 function handleLocationError(error) {
   console.error("Location error:", error);
-  let message = "Location tracking error";
+  userLocation = [-1.9577, 30.1127]; // fallback to Kigali center
 
-  switch (error.code) {
-    case error.PERMISSION_DENIED:
-      message = "Location access denied";
-      break;
-    case error.POSITION_UNAVAILABLE:
-      message = "Location unavailable";
-      break;
-    case error.TIMEOUT:
-      message = "Location timeout";
-      break;
+  if (!map) {
+    map = L.map("map").setView(userLocation, 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
   }
-
-  addLiveUpdate("Tracking Issue", message);
 }
+
 
 // Update ETA based on current location
 async function updateETA() {
@@ -541,24 +509,6 @@ function addLiveUpdate(title, message) {
   // Keep only last 5 updates
   while (updatesContainer.children.length > 5) {
     updatesContainer.removeChild(updatesContainer.lastChild);
-  }
-}
-
-// Update trip details from stored data (same as before)
-function updateTripDetails() {
-  const tripData = JSON.parse(localStorage.getItem("currentTrip") || "{}");
-
-  if (tripData.pickup) {
-    document.getElementById("pickupLocation").textContent = tripData.pickupAddress || tripData.pickup;
-  }
-
-  if (tripData.destination) {
-    document.getElementById("destinationLocation").textContent = tripData.destinationAddress || tripData.destination;
-    destinationLocation = getQueryParam("destination").split(",").map(Number).reverse(); // Leaflet uses [lat, lng]
-  }
-
-  if (tripData.rideType) {
-    document.getElementById("rideTypeDisplay").textContent = capitalizeFirst(tripData.rideType);
   }
 }
 
@@ -730,7 +680,7 @@ async function reverseGeocode(lng, lat) {
       if (data.address.suburb) addressParts.push(data.address.suburb);
       if (data.address.city_district) addressParts.push(data.address.city_district);
       if (data.address.city) addressParts.push(data.address.city);
-      
+
       return addressParts.join(", ") || "Nearby location";
     }
 
